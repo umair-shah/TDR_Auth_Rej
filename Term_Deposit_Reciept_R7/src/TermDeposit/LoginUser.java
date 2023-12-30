@@ -6,8 +6,10 @@ import java.awt.Image;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
+import javax.swing.JSpinner;
 import javax.swing.SwingUtilities;
 
 import java.awt.Color;
@@ -23,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.awt.Font;
 
 public class LoginUser {
@@ -51,6 +54,40 @@ public class LoginUser {
 		frame.getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
+		
+
+        
+        SpinnerDateModel model = new SpinnerDateModel();
+        final JSpinner spinner = new JSpinner(model);
+        JSpinner.DateEditor editor = new JSpinner.DateEditor(spinner, "dd/MM/yyyy");
+        spinner.setEditor(editor);
+        panel.add(spinner);
+		
+        JButton setDateButton = new JButton("Set Date");
+        setDateButton.setBounds(642, 333, 89, 23);
+
+        panel.add(setDateButton);
+
+        setDateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	SpinnerDateModel model = new SpinnerDateModel();
+                JSpinner spinner = new JSpinner(model);
+                JSpinner.DateEditor editor = new JSpinner.DateEditor(spinner, "dd/MM/yyyy");
+                spinner.setEditor(editor);
+
+                int option = JOptionPane.showOptionDialog(null, spinner, "Select Date",
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+
+                if (option == JOptionPane.OK_OPTION) {
+                    Date date = model.getDate();
+                    // Handle the selected date
+                    System.out.println("Date selected: " + date);
+                }
+            }
+        });
+		
+		panel.repaint();
 		branchCodeField = new MaxLengthNumericField(4);
 		branchCodeField.setToolTipText("");
 		branchCodeField.setBounds(458, 223, 86, 20);
