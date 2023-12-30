@@ -1,0 +1,195 @@
+
+
+Create table User_role
+( 
+ID integer primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+DESC varchar(100) not null
+);
+insert into user_role(DESC) values('User');
+insert into user_role(DESC) values('Authorizer');
+
+insert into users_tl (ID,login_id,name,password,last_signon,user_role_id,brn_cd) values(2,'TDRAuth','Hammad','login123','30/12/2023','2',1001);
+select * from account_tl;
+
+create table account_tl (
+account_id bigint primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+Brn_id integer not null,
+acc_type_id integer not null,
+customer_id bigint not null,
+run_no decimal (2,0) not null,
+check_digit decimal(1,0) not null,
+title varchar(100),
+balance double ,
+block_amnt double,
+curr_cd_id integer,
+status_id integer,
+signature blob );
+
+
+Insert into Account_tl (Brn_id,acc_type_id,customer_id,run_no,check_digit,title,balance,block_amnt,curr_cd_id,status_id) values(1,1,1,01,5,'Umair Shah',5000000,0,1,1);
+
+create table account_type (
+acc_type_id bigint primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+acc_type_cd decimal (4,0) not null,
+Desc Varchar(100) );
+
+insert into account_type (acc_type_cd,Desc) values(0010,'TDR Account');
+
+Create table Customer(
+Customer_id integer primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+customer_no decimal (6,0) not null,
+cnic_no varchar (13) not null,
+Address Varchar(200),
+Contact_no varchar (15)
+);
+insert into Customer(customer_no, cnic_no ,Address ,Contact_no) values (236589,'4210174503745','4-B 1/8 Nazimabad # 04 karachi','03022754461');
+
+Create table currency (
+id integer primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+curr_code varchar(5) not null,
+currency_name Varchar(100) not null
+);
+insert into currency(curr_code,currency_name) values ('PKR','Pakistani Rupees');
+
+create table account_status(
+ID integer primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+DESC varchar(100) not null
+);
+insert into account_status(DESC) values('Active');
+insert into account_status(DESC) values('Dormant');
+insert into account_status(DESC) values('Closed');
+insert into account_status(DESC) values('Debit Blocked');
+insert into account_status(DESC) values('Deceased');
+
+
+
+
+
+Create table tdr_application(
+application_id bigint primary key  GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+Account_id bigint not null,
+holder_name Varchar(100) ,
+amount double,
+input_by varchar(50),
+approved_by varchar(50),
+maturity_date date ,
+application_date date,
+tdr_request_doc BlOB,
+TDR_App_status integer,
+product_id integer,
+maturity_action integer,
+mode_of_fund integer,
+Principal_fund_crd_acc_id bigint ,
+prof_nom_acc_id bigint,
+TDR_request_doc_name varchar(50)
+);
+
+create table tdr_status(
+ID integer primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+Desc varchar(100)
+);
+insert into tdr_status(desc) values('Input');
+insert into tdr_status(desc) values('Opened');
+insert into tdr_status(desc) values('Authorized');
+insert into tdr_status(desc) values('Rejected');
+
+create  table TDR_Product(
+ID integer primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+Desc varchar(100) not null,
+Tenure integer not null,
+TDR_Rate double not null
+);
+insert into TDR_Product(Desc,Tenure,TDR_Rate) values('1 Month',1,'10');
+insert into TDR_Product(Desc,Tenure,TDR_Rate) values('3 Month',3,'11');
+insert into TDR_Product(Desc,Tenure,TDR_Rate) values('6 Month',6,'12');
+insert into TDR_Product(Desc,Tenure,TDR_Rate) values('1 Year',12,'13');
+insert into TDR_Product(Desc,Tenure,TDR_Rate) values('3 Year',36,'14');
+insert into TDR_Product(Desc,Tenure,TDR_Rate) values('5 Year',60,'15');
+
+select * from TDR_Product;
+
+Create Table Maturity_Action(
+ID integer primary key  GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+Desc varchar(100)
+);
+
+insert into Maturity_Action (desc) values('Credit Principal & Profit to Account');
+insert into Maturity_Action (desc) values('Rollover principal');
+insert into Maturity_Action (desc) values('Rollover principal & profit');
+
+
+
+Create Table Mode_of_fund(
+ID integer primary key  GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+Desc varchar(100)
+);
+
+insert into Mode_of_fund (desc) values('Direct Account Debit');
+select * from tdr_application;
+SELECT B.brn_cd||lpad(At.acc_type_cd,4,'0')||C.Customer_no||lpad(acc.run_no,2,'0') || acc.Check_digit As Account_No,acc.account_id,acc.title,B.Brn_cd,B.Brn_Name,Curr.Currency_name,acc.balance,tdr.application_date,tdr.Amount,tdr.TDR_Request_Doc,tdr.TDR_Request_Doc_Name,tdr.mode_of_fund,tdr.maturity_action,tdr.product_id from TDR_Application tdr INNER JOIN Account_tl acc ON tdr.account_id=acc.account_id INNER JOIN Branch_tl B ON B.brn_ID=acc.brn_Id INNER JOIN Customer C ON acc.Customer_id=C.Customer_id INNER JOIN account_type At ON At.acc_type_id=acc.acc_type_id INNER JOIN Currency curr ON acc.curr_cd_id = curr.ID where tdr.application_id= 1;
+
+Create Table TDR_Deal(
+Deal_id bigint  primary key  GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+Deal_date Date,
+Deal_status integer,
+TDR_App_id integer,
+TDR_Account_ID bigint,
+brn_id integer
+);
+create table TDR_Deal_status
+(
+ID integer  primary key  GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+DESC varchar(100) 
+);
+insert into TDR_Deal_status(desc) values ('Opened');
+insert into TDR_Deal_status(desc) values ('Closed');
+
+create table Voucher(
+voucher_id bigint primary key  GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+brn_id integer not null,
+Voucher_type_id integer not null,
+voucher_no varchar(15),
+voucher_date date
+);
+
+create table voucher_type(
+voucher_type_id integer  primary key  GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+voucher_desc varchar(50)
+);
+
+insert into voucher_type (voucher_desc) values ('TDR Opening');
+
+create table transaction_tl (
+transaction_id Bigint  primary key  GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+amount double not null,
+Voucher_id bigint not null,
+cus_account_id bigint,
+internal_account_id bigint,
+trans_type_ID integer
+);
+--drop table transaction_tl;
+create table transaction_type(
+transaction_type_id integer  primary key  GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+transaction_type_Desc varchar(50) not null
+);
+insert into transaction_type (transaction_type_Desc) values ('Credit');
+insert into transaction_type (transaction_type_Desc) values ('Debit');
+
+
+create table TDR_Deal_voucher (
+Deal_id bigint not null,
+voucher_id bigint not null,
+approved_by varchar(50) not null
+);
+
+select * from account_tl;
+select * from tdr_status;
+select * from tdr_deal where application_id=2;
+Select * from tdr_application;
+select * from TDR_deal_voucher;
+delete from tdr_Deal where deal_id=2;
+select * from tdr_deal_Status;
+select * from tdr_status;
+select day(deal_date) from tdr_deal;
+select * from transaction_tl;
+select * from voucher; 
